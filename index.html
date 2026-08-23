@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Chore Cafe</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#D4A373">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Status Bar -->
+  <header class="top-bar">
+    <div class="player-switcher">
+      <select id="player-select" onchange="switchPlayer(this.value)">
+        <option value="P1">Player 1</option>
+        <option value="P2">Player 2</option>
+      </select>
+    </div>
+    <div class="currency-badge" id="player-currency">💰 0 Coins</div>
+  </header>
+
+  <!-- Screens -->
+  <main>
+    <!-- 1. Quests Screen -->
+    <section id="screen-quests" class="screen">
+      <h2 class="section-header">🧹 Quest Board</h2>
+      <div id="chore-list"></div>
+    </section>
+
+    <!-- 2. Cat Cafe Screen -->
+    <section id="screen-cafe" class="screen hidden">
+      <h2 class="section-header">☕ Our Cat Cafe</h2>
+      <p class="card-sub" style="margin-bottom: 12px;">Items collected by both of you appear here!</p>
+      <div id="cafe-grid" class="grid-display"></div>
+    </section>
+
+    <!-- 3. Shop Screen -->
+    <section id="screen-shop" class="screen hidden">
+      <h2 class="section-header">🛍️ Cafe & Wardrobe Shop</h2>
+      <div id="shop-list"></div>
+    </section>
+
+    <!-- 4. Profile / Competition Screen -->
+    <section id="screen-profile" class="screen hidden">
+      <h2 class="section-header">🏆 Leaderboard & Outfits</h2>
+      <div id="leaderboard-view"></div>
+    </section>
+  </main>
+
+  <!-- Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('quests')">
+      <span class="nav-icon">📋</span>
+      <span>Quests</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('cafe')">
+      <span class="nav-icon">🐱</span>
+      <span>Cafe</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('shop')">
+      <span class="nav-icon">🎁</span>
+      <span>Shop</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('profile')">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
