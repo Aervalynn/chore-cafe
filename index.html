@@ -4,9 +4,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Chore Cafe</title>
-  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D4A373">
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg-color: #FAF6F0;
+      --card-bg: #FFFFFF;
+      --primary: #8B5E3C;
+      --accent: #E07A5F;
+      --gold: #DDA15E;
+      --text-dark: #2F3E46;
+      --text-muted: #6C757D;
+      --border-radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      padding-bottom: 90px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .player-switcher select {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--primary);
+      background-color: transparent;
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 0.9rem;
+    }
+
+    .currency-badge {
+      background-color: #FEFAE0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      color: #B9770E;
+      border: 1px solid #FAEDCD;
+      font-size: 0.95rem;
+    }
+
+    .screen {
+      padding: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .section-header {
+      margin: 10px 0 16px;
+      font-size: 1.3rem;
+      color: var(--primary);
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .card-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .btn-action {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-action:active {
+      transform: scale(0.95);
+      background-color: var(--accent);
+    }
+
+    .grid-display {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .grid-item {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .grid-item .sprite {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--card-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+      z-index: 100;
+    }
+
+    .nav-item {
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+    }
+  </style>
 </head>
 <body>
 
@@ -21,28 +185,24 @@
     <div class="currency-badge" id="player-currency">💰 0 Coins</div>
   </header>
 
-  <!-- Screens -->
+  <!-- App Views -->
   <main>
-    <!-- 1. Quests Screen -->
     <section id="screen-quests" class="screen">
       <h2 class="section-header">🧹 Quest Board</h2>
       <div id="chore-list"></div>
     </section>
 
-    <!-- 2. Cat Cafe Screen -->
     <section id="screen-cafe" class="screen hidden">
       <h2 class="section-header">☕ Our Cat Cafe</h2>
       <p class="card-sub" style="margin-bottom: 12px;">Items collected by both of you appear here!</p>
       <div id="cafe-grid" class="grid-display"></div>
     </section>
 
-    <!-- 3. Shop Screen -->
     <section id="screen-shop" class="screen hidden">
       <h2 class="section-header">🛍️ Cafe & Wardrobe Shop</h2>
       <div id="shop-list"></div>
     </section>
 
-    <!-- 4. Profile / Competition Screen -->
     <section id="screen-profile" class="screen hidden">
       <h2 class="section-header">🏆 Leaderboard & Outfits</h2>
       <div id="leaderboard-view"></div>
@@ -69,7 +229,240 @@
     </button>
   </nav>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+  <script>
+    // --- Supabase Config & REST API Helpers ---
+    const SUPABASE_URL = "https://pbnxvxdbqtsawqsewddl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_CdAmsR0a0AYj7CV8eAwBxQ_P-5L1W0c";
+
+    let activePlayerId = "P1";
+    let players = {
+      P1: { id: "P1", name: "Player 1", role_title: "Head Barista", current_coins: 50, weekly_points: 30, active_outfit: "Barista Apron" },
+      P2: { id: "P2", name: "Player 2", role_title: "Feline Enthusiast", current_coins: 40, weekly_points: 20, active_outfit: "Cozy Sweater" }
+    };
+
+    let chores = [
+      { id: "C01", name: "Scoop Litter Boxes", category: "Daily Pet Care", points: 15, last_completed_by: null },
+      { id: "C02", name: "Empty / Load Dishwasher", category: "Kitchen", points: 10, last_completed_by: null },
+      { id: "C03", name: "Wipe Kitchen Counters", category: "Kitchen", points: 10, last_completed_by: null },
+      { id: "C04", name: "Take Out Trash & Recycling", category: "Maintenance", points: 15, last_completed_by: null },
+      { id: "C05", name: "Vacuum Living Room", category: "Deep Clean", points: 30, last_completed_by: null },
+      { id: "C06", name: "Mop Hardwood Floors", category: "Deep Clean", points: 35, last_completed_by: null }
+    ];
+
+    let catalog = [
+      { id: "CAT01", name: "Calico Kitten", item_type: "Cat", cost: 50, sprite: "🐈", owned: true, owner_id: "P1", placed_in_cafe: true },
+      { id: "CAT02", name: "Fluffy Tuxedo", item_type: "Cat", cost: 75, sprite: "🐈‍⬛", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "CAT03", name: "Orange Tabby Troublemaker", item_type: "Cat", cost: 60, sprite: "🐱", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "FUR01", name: "Sisal Scratching Post", item_type: "Toy", cost: 30, sprite: "🪵", owned: true, owner_id: "P2", placed_in_cafe: true },
+      { id: "FUR02", name: "Deluxe Multi-Tier Cat Tree", item_type: "Furniture", cost: 120, sprite: "🏰", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "W01", name: "Cat Ear Headband", item_type: "Wardrobe", cost: 25, sprite: "🎀", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "W02", name: "Vintage Spectacles", item_type: "Wardrobe", cost: 30, sprite: "👓", owned: false, owner_id: null, placed_in_cafe: false }
+    ];
+
+    // Supabase REST fetch helper
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+          method,
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: body ? JSON.stringify(body) : null
+        });
+        return await res.json();
+      } catch (err) {
+        console.error("API error:", err);
+        return null;
+      }
+    }
+
+    async function syncWithSupabase() {
+      const pData = await apiRequest('players?select=*');
+      if (pData && Array.isArray(pData) && pData.length > 0) {
+        players = pData.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      }
+
+      const cData = await apiRequest('chores?select=*');
+      if (cData && Array.isArray(cData) && cData.length > 0) {
+        chores = cData;
+      }
+
+      const catData = await apiRequest('catalog?select=*');
+      if (catData && Array.isArray(catData) && catData.length > 0) {
+        catalog = catData;
+      }
+
+      updateUI();
+    }
+
+    function updateUI() {
+      const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Player" };
+      document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
+      renderChores();
+      renderCafe();
+      renderShop();
+      renderLeaderboard();
+    }
+
+    function switchPlayer(playerId) {
+      activePlayerId = playerId;
+      updateUI();
+    }
+
+    function showScreen(screenName) {
+      const screens = ["quests", "cafe", "shop", "profile"];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) el.classList.toggle("hidden", s !== screenName);
+      });
+
+      const buttons = document.querySelectorAll(".nav-item");
+      buttons.forEach((btn, idx) => {
+        btn.classList.toggle("active", screens[idx] === screenName);
+      });
+    }
+
+    async function completeChore(choreId) {
+      const chore = chores.find(c => c.id === choreId);
+      const player = players[activePlayerId];
+      if (!chore || !player) return;
+
+      player.current_coins = (player.current_coins || 0) + chore.points;
+      player.weekly_points = (player.weekly_points || 0) + chore.points;
+      player.lifetime_points = (player.lifetime_points || 0) + chore.points;
+      chore.last_completed_by = player.name;
+
+      updateUI();
+
+      // Sync with DB
+      await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', {
+        current_coins: player.current_coins,
+        weekly_points: player.weekly_points,
+        lifetime_points: player.lifetime_points
+      });
+
+      await apiRequest(`chores?id=eq.${choreId}`, 'PATCH', {
+        last_completed_by: player.name
+      });
+
+      alert(`✨ Great job! +${chore.points} coins awarded to ${player.name}!`);
+    }
+
+    async function buyItem(itemId) {
+      const item = catalog.find(i => i.id === itemId);
+      const player = players[activePlayerId];
+      if (!item || item.owned || !player) return;
+
+      if ((player.current_coins || 0) < item.cost) {
+        alert("Not enough coins! Check off some chores first.");
+        return;
+      }
+
+      player.current_coins -= item.cost;
+      item.owned = true;
+      item.owner_id = activePlayerId;
+      item.placed_in_cafe = item.item_type !== 'Wardrobe';
+
+      updateUI();
+
+      // Sync with DB
+      await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', {
+        current_coins: player.current_coins
+      });
+
+      await apiRequest(`catalog?id=eq.${itemId}`, 'PATCH', {
+        owned: true,
+        owner_id: activePlayerId,
+        placed_in_cafe: item.placed_in_cafe
+      });
+
+      alert(`🎉 Purchased ${item.name}!`);
+    }
+
+    function renderChores() {
+      const container = document.getElementById("chore-list");
+      if (!container) return;
+      container.innerHTML = chores.map(chore => `
+        <div class="card">
+          <div>
+            <div class="card-title">${chore.name}</div>
+            <div class="card-sub">${chore.category} • 💰 ${chore.points} Coins ${chore.last_completed_by ? `(Last: ${chore.last_completed_by})` : ''}</div>
+          </div>
+          <button class="btn-action" onclick="completeChore('${chore.id}')">Done</button>
+        </div>
+      `).join("");
+    }
+
+    function renderCafe() {
+      const container = document.getElementById("cafe-grid");
+      if (!container) return;
+      const placedItems = catalog.filter(i => i.placed_in_cafe && i.owned);
+
+      if (placedItems.length === 0) {
+        container.innerHTML = `<p style="grid-column: span 2; text-align: center; color: var(--text-muted); padding: 20px;">The cafe is empty! Visit the shop to adopt your first cat.</p>`;
+        return;
+      }
+
+      container.innerHTML = placedItems.map(item => `
+        <div class="grid-item">
+          <div class="sprite">${item.sprite}</div>
+          <div class="card-title">${item.name}</div>
+          <div class="card-sub">Added by ${players[item.owner_id]?.name || 'Both'}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderShop() {
+      const container = document.getElementById("shop-list");
+      if (!container) return;
+      const shopItems = catalog.filter(i => !i.owned);
+
+      if (shopItems.length === 0) {
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 20px;">Everything in the catalog has been unlocked!</p>`;
+        return;
+      }
+
+      container.innerHTML = shopItems.map(item => `
+        <div class="card">
+          <div>
+            <div class="card-title">${item.sprite} ${item.name}</div>
+            <div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div>
+          </div>
+          <button class="btn-action" onclick="buyItem('${item.id}')">Buy</button>
+        </div>
+      `).join("");
+    }
+
+    function renderLeaderboard() {
+      const container = document.getElementById("leaderboard-view");
+      if (!container) return;
+      const p1 = players.P1 || {};
+      const p2 = players.P2 || {};
+
+      container.innerHTML = `
+        <div class="card" style="margin-bottom: 12px;">
+          <div>
+            <div class="card-title">👑 ${p1.name || 'Player 1'} (${p1.role_title || 'Barista'})</div>
+            <div class="card-sub">Weekly Points: ${p1.weekly_points || 0} • Outfit: ${p1.active_outfit || 'Default'}</div>
+          </div>
+          <span style="font-weight:bold; color: var(--gold);">💰 ${p1.current_coins || 0}</span>
+        </div>
+        <div class="card">
+          <div>
+            <div class="card-title">⭐ ${p2.name || 'Player 2'} (${p2.role_title || 'Enthusiast'})</div>
+            <div class="card-sub">Weekly Points: ${p2.weekly_points || 0} • Outfit: ${p2.active_outfit || 'Default'}</div>
+          </div>
+          <span style="font-weight:bold; color: var(--gold);">💰 ${p2.current_coins || 0}</span>
+        </div>
+      `;
+    }
+
+    // Initialize immediately on load, then sync with cloud
+    updateUI();
+    syncWithSupabase();
+  </script>
 </body>
 </html>
