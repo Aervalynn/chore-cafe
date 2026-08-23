@@ -1,6 +1,6 @@
 // --- Supabase Config (Replace with your actual keys from Supabase Settings -> API) ---
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://pbnxvxdbqtsawqsewddl.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_CdAmsR0a0AYj7CV8eAwBxQ_P-5L1W0c";
 // const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Game State ---
