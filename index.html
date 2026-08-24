@@ -50,13 +50,23 @@
       gap: 10px;
     }
 
-    .avatar-mini {
-      width: 40px;
-      height: 40px;
+    /* Face portrait frame */
+    .avatar-frame-mini {
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       border: 2px solid var(--primary);
-      object-fit: cover;
-      object-position: top center;
+      overflow: hidden;
+      background-color: #ECEAE4;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .avatar-frame-mini img {
+      width: 140%;
+      height: auto;
+      margin-top: -5%;
       image-rendering: pixelated;
     }
 
@@ -99,7 +109,7 @@
     .card {
       background-color: var(--card-bg);
       border-radius: var(--border-radius);
-      padding: 14px 16px;
+      padding: 12px 16px;
       margin-bottom: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       display: flex;
@@ -115,13 +125,13 @@
     }
 
     .item-img-thumb {
-      width: 52px;
-      height: 52px;
+      width: 54px;
+      height: 54px;
       border-radius: 10px;
       object-fit: contain;
       image-rendering: pixelated;
       background-color: #F8F9FA;
-      padding: 2px;
+      border: 1px solid rgba(0,0,0,0.05);
     }
 
     .card-title {
@@ -162,11 +172,12 @@
       padding: 14px;
       text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.04);
     }
 
     .cat-avatar-frame {
       width: 100%;
-      height: 110px;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -180,13 +191,22 @@
       image-rendering: pixelated;
     }
 
-    .leaderboard-avatar {
-      width: 64px;
-      height: 64px;
+    .leaderboard-avatar-frame {
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       border: 2px solid var(--primary);
-      object-fit: cover;
-      object-position: top center;
+      overflow: hidden;
+      background-color: #ECEAE4;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .leaderboard-avatar-frame img {
+      width: 140%;
+      height: auto;
+      margin-top: -5%;
       image-rendering: pixelated;
     }
 
@@ -227,10 +247,12 @@
 </head>
 <body>
 
-  <!-- Top Status Bar -->
+  <!-- Top Bar -->
   <header class="top-bar">
     <div class="user-profile-header">
-      <img id="header-avatar" src="./jay.jpg" alt="Avatar" class="avatar-mini">
+      <div class="avatar-frame-mini">
+        <img id="header-avatar" src="./jay.jpg" alt="Avatar">
+      </div>
       <div class="player-switcher">
         <select id="player-select" onchange="switchPlayer(this.value)">
           <option value="P1">Jay</option>
@@ -241,7 +263,7 @@
     <div class="currency-badge" id="player-currency">💰 0 Coins</div>
   </header>
 
-  <!-- App Views -->
+  <!-- Main Screens -->
   <main>
     <section id="screen-quests" class="screen">
       <h2 class="section-header">🧹 Quest Board</h2>
@@ -265,7 +287,7 @@
     </section>
   </main>
 
-  <!-- Navigation Bar -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="showScreen('quests')">
       <span class="nav-icon">📋</span>
@@ -291,8 +313,8 @@
 
     let activePlayerId = "P1";
     let players = {
-      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg", active_outfit: "Blazer & Cap" },
-      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg", active_outfit: "Off-Shoulder Chic" }
+      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg" },
+      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg" }
     };
 
     let chores = [
@@ -354,7 +376,7 @@
     }
 
     function updateUI() {
-      const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Player", image_url: "./jay.jpg" };
+      const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Jay", image_url: "./jay.jpg" };
       document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
       document.getElementById("header-avatar").src = activePlayer.image_url || (activePlayerId === 'P1' ? './jay.jpg' : './casey.jpg');
       
@@ -434,7 +456,7 @@
         placed_in_cafe: item.placed_in_cafe
       });
 
-      alert(`🎉 Adopted/Purchased ${item.name}!`);
+      alert(`🎉 Welcomed ${item.name}!`);
     }
 
     function renderChores() {
@@ -464,7 +486,7 @@
       container.innerHTML = placedItems.map(item => `
         <div class="grid-item">
           <div class="cat-avatar-frame">
-            <img src="${item.image_url}" alt="${item.name}">
+            <img src="${item.image_url || './bun.jpg'}" alt="${item.name}">
           </div>
           <div class="card-title">${item.name}</div>
           <div class="card-sub">Welcomed by ${players[item.owner_id]?.name || 'Both'}</div>
@@ -485,7 +507,7 @@
       container.innerHTML = shopItems.map(item => `
         <div class="card">
           <div class="card-item-left">
-            <img src="${item.image_url}" class="item-img-thumb" alt="${item.name}">
+            <img src="${item.image_url || './bun.jpg'}" class="item-img-thumb" alt="${item.name}">
             <div>
               <div class="card-title">${item.name}</div>
               <div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div>
@@ -505,7 +527,9 @@
       container.innerHTML = `
         <div class="card" style="margin-bottom: 14px;">
           <div class="card-item-left">
-            <img src="${p1.image_url || './jay.jpg'}" class="leaderboard-avatar" alt="Jay">
+            <div class="leaderboard-avatar-frame">
+              <img src="${p1.image_url || './jay.jpg'}" alt="Jay">
+            </div>
             <div>
               <div class="card-title">👑 ${p1.name || 'Jay'} (${p1.role_title || 'Head Barista'})</div>
               <div class="card-sub">Weekly Score: <strong>${p1.weekly_points || 0} pts</strong></div>
@@ -516,7 +540,9 @@
 
         <div class="card">
           <div class="card-item-left">
-            <img src="${p2.image_url || './casey.jpg'}" class="leaderboard-avatar" alt="Casey">
+            <div class="leaderboard-avatar-frame">
+              <img src="${p2.image_url || './casey.jpg'}" alt="Casey">
+            </div>
             <div>
               <div class="card-title">⭐ ${p2.name || 'Casey'} (${p2.role_title || 'Cafe Manager'})</div>
               <div class="card-sub">Weekly Score: <strong>${p2.weekly_points || 0} pts</strong></div>
