@@ -36,12 +36,28 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px 18px;
+      padding: 10px 18px;
       background-color: var(--card-bg);
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       position: sticky;
       top: 0;
       z-index: 100;
+    }
+
+    .user-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar-mini {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      object-fit: cover;
+      object-position: top center;
+      image-rendering: pixelated;
     }
 
     .player-switcher select {
@@ -51,7 +67,7 @@
       background-color: transparent;
       font-weight: bold;
       color: var(--primary);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .currency-badge {
@@ -90,6 +106,22 @@
       justify-content: space-between;
       align-items: center;
       border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .card-item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .item-img-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      background-color: #F8F9FA;
+      padding: 2px;
     }
 
     .card-title {
@@ -132,9 +164,30 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
 
-    .grid-item .sprite {
-      font-size: 2.5rem;
+    .cat-avatar-frame {
+      width: 100%;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 8px;
+    }
+
+    .cat-avatar-frame img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .leaderboard-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      object-fit: cover;
+      object-position: top center;
+      image-rendering: pixelated;
     }
 
     .bottom-nav {
@@ -176,11 +229,14 @@
 
   <!-- Top Status Bar -->
   <header class="top-bar">
-    <div class="player-switcher">
-      <select id="player-select" onchange="switchPlayer(this.value)">
-        <option value="P1">Player 1</option>
-        <option value="P2">Player 2</option>
-      </select>
+    <div class="user-profile-header">
+      <img id="header-avatar" src="./jay.jpg" alt="Avatar" class="avatar-mini">
+      <div class="player-switcher">
+        <select id="player-select" onchange="switchPlayer(this.value)">
+          <option value="P1">Jay</option>
+          <option value="P2">Casey</option>
+        </select>
+      </div>
     </div>
     <div class="currency-badge" id="player-currency">💰 0 Coins</div>
   </header>
@@ -194,17 +250,17 @@
 
     <section id="screen-cafe" class="screen hidden">
       <h2 class="section-header">☕ Our Cat Cafe</h2>
-      <p class="card-sub" style="margin-bottom: 12px;">Items collected by both of you appear here!</p>
+      <p class="card-sub" style="margin-bottom: 12px;">Cats and furnishings adopted by both of you appear here!</p>
       <div id="cafe-grid" class="grid-display"></div>
     </section>
 
     <section id="screen-shop" class="screen hidden">
-      <h2 class="section-header">🛍️ Cafe & Wardrobe Shop</h2>
+      <h2 class="section-header">🛍️ Adoption Center & Boutique</h2>
       <div id="shop-list"></div>
     </section>
 
     <section id="screen-profile" class="screen hidden">
-      <h2 class="section-header">🏆 Leaderboard & Outfits</h2>
+      <h2 class="section-header">🏆 Player Profiles & Race</h2>
       <div id="leaderboard-view"></div>
     </section>
   </main>
@@ -230,14 +286,13 @@
   </nav>
 
   <script>
-    // --- Supabase Config & REST API Helpers ---
     const SUPABASE_URL = "https://pbnxvxdbqtsawqsewddl.supabase.co";
     const SUPABASE_KEY = "sb_publishable_CdAmsR0a0AYj7CV8eAwBxQ_P-5L1W0c";
 
     let activePlayerId = "P1";
     let players = {
-      P1: { id: "P1", name: "Player 1", role_title: "Head Barista", current_coins: 50, weekly_points: 30, active_outfit: "Barista Apron" },
-      P2: { id: "P2", name: "Player 2", role_title: "Feline Enthusiast", current_coins: 40, weekly_points: 20, active_outfit: "Cozy Sweater" }
+      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg", active_outfit: "Blazer & Cap" },
+      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg", active_outfit: "Off-Shoulder Chic" }
     };
 
     let chores = [
@@ -250,16 +305,16 @@
     ];
 
     let catalog = [
-      { id: "CAT01", name: "Calico Kitten", item_type: "Cat", cost: 50, sprite: "🐈", owned: true, owner_id: "P1", placed_in_cafe: true },
-      { id: "CAT02", name: "Fluffy Tuxedo", item_type: "Cat", cost: 75, sprite: "🐈‍⬛", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "CAT03", name: "Orange Tabby Troublemaker", item_type: "Cat", cost: 60, sprite: "🐱", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "FUR01", name: "Sisal Scratching Post", item_type: "Toy", cost: 30, sprite: "🪵", owned: true, owner_id: "P2", placed_in_cafe: true },
-      { id: "FUR02", name: "Deluxe Multi-Tier Cat Tree", item_type: "Furniture", cost: 120, sprite: "🏰", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "W01", name: "Cat Ear Headband", item_type: "Wardrobe", cost: 25, sprite: "🎀", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "W02", name: "Vintage Spectacles", item_type: "Wardrobe", cost: 30, sprite: "👓", owned: false, owner_id: null, placed_in_cafe: false }
+      { id: "CAT01", name: "Bun", item_type: "Cat", cost: 50, image_url: "./bun.jpg", owned: true, owner_id: "P1", placed_in_cafe: true },
+      { id: "CAT02", name: "Clove", item_type: "Cat", cost: 60, image_url: "./clove.jpg", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "CAT03", name: "Cobweb", item_type: "Cat", cost: 60, image_url: "./cobweb.jpg", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "CAT04", name: "Dandi", item_type: "Cat", cost: 70, image_url: "./dandi.jpg", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "CAT05", name: "Pumpkin", item_type: "Cat", cost: 75, image_url: "./pumpkin.jpg", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "FUR01", name: "Sisal Scratching Post", item_type: "Toy", cost: 30, image_url: "https://img.icons8.com/color/96/cat-tree.png", owned: true, owner_id: "P2", placed_in_cafe: true },
+      { id: "FUR02", name: "Deluxe Multi-Tier Cat Tree", item_type: "Furniture", cost: 120, image_url: "https://img.icons8.com/color/96/cat-track.png", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "W01", name: "Cat Ear Headband", item_type: "Wardrobe", cost: 25, image_url: "https://img.icons8.com/color/96/party-hat.png", owned: false, owner_id: null, placed_in_cafe: false }
     ];
 
-    // Supabase REST fetch helper
     async function apiRequest(endpoint, method = 'GET', body = null) {
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
@@ -299,8 +354,10 @@
     }
 
     function updateUI() {
-      const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Player" };
+      const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Player", image_url: "./jay.jpg" };
       document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
+      document.getElementById("header-avatar").src = activePlayer.image_url || (activePlayerId === 'P1' ? './jay.jpg' : './casey.jpg');
+      
       renderChores();
       renderCafe();
       renderShop();
@@ -337,7 +394,6 @@
 
       updateUI();
 
-      // Sync with DB
       await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', {
         current_coins: player.current_coins,
         weekly_points: player.weekly_points,
@@ -368,7 +424,6 @@
 
       updateUI();
 
-      // Sync with DB
       await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', {
         current_coins: player.current_coins
       });
@@ -379,7 +434,7 @@
         placed_in_cafe: item.placed_in_cafe
       });
 
-      alert(`🎉 Purchased ${item.name}!`);
+      alert(`🎉 Adopted/Purchased ${item.name}!`);
     }
 
     function renderChores() {
@@ -408,9 +463,11 @@
 
       container.innerHTML = placedItems.map(item => `
         <div class="grid-item">
-          <div class="sprite">${item.sprite}</div>
+          <div class="cat-avatar-frame">
+            <img src="${item.image_url}" alt="${item.name}">
+          </div>
           <div class="card-title">${item.name}</div>
-          <div class="card-sub">Added by ${players[item.owner_id]?.name || 'Both'}</div>
+          <div class="card-sub">Welcomed by ${players[item.owner_id]?.name || 'Both'}</div>
         </div>
       `).join("");
     }
@@ -421,17 +478,20 @@
       const shopItems = catalog.filter(i => !i.owned);
 
       if (shopItems.length === 0) {
-        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 20px;">Everything in the catalog has been unlocked!</p>`;
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 20px;">All cats and items unlocked! 🐱🎉</p>`;
         return;
       }
 
       container.innerHTML = shopItems.map(item => `
         <div class="card">
-          <div>
-            <div class="card-title">${item.sprite} ${item.name}</div>
-            <div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div>
+          <div class="card-item-left">
+            <img src="${item.image_url}" class="item-img-thumb" alt="${item.name}">
+            <div>
+              <div class="card-title">${item.name}</div>
+              <div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div>
+            </div>
           </div>
-          <button class="btn-action" onclick="buyItem('${item.id}')">Buy</button>
+          <button class="btn-action" onclick="buyItem('${item.id}')">Adopt / Buy</button>
         </div>
       `).join("");
     }
@@ -443,24 +503,30 @@
       const p2 = players.P2 || {};
 
       container.innerHTML = `
-        <div class="card" style="margin-bottom: 12px;">
-          <div>
-            <div class="card-title">👑 ${p1.name || 'Player 1'} (${p1.role_title || 'Barista'})</div>
-            <div class="card-sub">Weekly Points: ${p1.weekly_points || 0} • Outfit: ${p1.active_outfit || 'Default'}</div>
+        <div class="card" style="margin-bottom: 14px;">
+          <div class="card-item-left">
+            <img src="${p1.image_url || './jay.jpg'}" class="leaderboard-avatar" alt="Jay">
+            <div>
+              <div class="card-title">👑 ${p1.name || 'Jay'} (${p1.role_title || 'Head Barista'})</div>
+              <div class="card-sub">Weekly Score: <strong>${p1.weekly_points || 0} pts</strong></div>
+            </div>
           </div>
-          <span style="font-weight:bold; color: var(--gold);">💰 ${p1.current_coins || 0}</span>
+          <span style="font-weight:bold; color: var(--gold); font-size: 1.1rem;">💰 ${p1.current_coins || 0}</span>
         </div>
+
         <div class="card">
-          <div>
-            <div class="card-title">⭐ ${p2.name || 'Player 2'} (${p2.role_title || 'Enthusiast'})</div>
-            <div class="card-sub">Weekly Points: ${p2.weekly_points || 0} • Outfit: ${p2.active_outfit || 'Default'}</div>
+          <div class="card-item-left">
+            <img src="${p2.image_url || './casey.jpg'}" class="leaderboard-avatar" alt="Casey">
+            <div>
+              <div class="card-title">⭐ ${p2.name || 'Casey'} (${p2.role_title || 'Cafe Manager'})</div>
+              <div class="card-sub">Weekly Score: <strong>${p2.weekly_points || 0} pts</strong></div>
+            </div>
           </div>
-          <span style="font-weight:bold; color: var(--gold);">💰 ${p2.current_coins || 0}</span>
+          <span style="font-weight:bold; color: var(--gold); font-size: 1.1rem;">💰 ${p2.current_coins || 0}</span>
         </div>
       `;
     }
 
-    // Initialize immediately on load, then sync with cloud
     updateUI();
     syncWithSupabase();
   </script>
