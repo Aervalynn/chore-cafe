@@ -50,7 +50,7 @@
       gap: 10px;
     }
 
-    /* Clean Circular Avatar Badges */
+    /* Circular Avatar Framing for Top Bar */
     .avatar-frame-mini {
       width: 46px;
       height: 46px;
@@ -67,7 +67,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 20%;
+      object-position: center 30%;
+      transform: scale(2.6);
     }
 
     .player-switcher select {
@@ -124,13 +125,26 @@
       gap: 14px;
     }
 
-    .item-img-thumb {
-      width: 58px;
-      height: 58px;
-      border-radius: 12px;
-      object-fit: contain;
-      background-color: #FFFFFF;
-      padding: 2px;
+    /* Shop Item Framing */
+    .item-img-thumb-frame {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      background-color: #FAF8F5;
+      border: 1px solid rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .item-img-thumb-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      transform: scale(2.2);
     }
 
     .card-title {
@@ -189,6 +203,7 @@
       object-fit: contain;
     }
 
+    /* Circular Avatar Framing for Profile/Leaderboard */
     .leaderboard-avatar-frame {
       width: 62px;
       height: 62px;
@@ -205,7 +220,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 20%;
+      object-position: center 30%;
+      transform: scale(2.6);
     }
 
     .bottom-nav {
@@ -505,7 +521,9 @@
       container.innerHTML = shopItems.map(item => `
         <div class="card">
           <div class="card-item-left">
-            <img src="${item.image_url || './bun.jpg'}" class="item-img-thumb" alt="${item.name}">
+            <div class="item-img-thumb-frame">
+              <img src="${item.image_url || './bun.jpg'}" alt="${item.name}">
+            </div>
             <div>
               <div class="card-title">${item.name}</div>
               <div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div>
