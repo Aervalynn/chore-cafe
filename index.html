@@ -51,6 +51,24 @@
       gap: 10px;
     }
 
+    /* Crown Overlay & Avatar Container */
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .crown-overlay {
+      position: absolute;
+      top: -8px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      transform: rotate(15deg);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+      z-index: 10;
+    }
+
     .avatar-frame-mini {
       width: 46px;
       height: 46px;
@@ -140,6 +158,11 @@
     .card.completed-today {
       opacity: 0.65;
       background-color: #F8F9FA;
+    }
+
+    .card.champion-card {
+      border: 2px solid var(--gold);
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF5 100%);
     }
 
     .card-item-left {
@@ -261,6 +284,18 @@
       transform: scale(2.6);
     }
 
+    .crown-badge {
+      background: #FFF3CD;
+      color: #856404;
+      font-weight: bold;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid #FFEBAA;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -295,7 +330,6 @@
       margin-bottom: 2px;
     }
 
-    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -367,8 +401,11 @@
   <!-- Top Bar -->
   <header class="top-bar">
     <div class="user-profile-header">
-      <div class="avatar-frame-mini">
-        <img id="header-avatar" src="./jay.jpg" alt="Jay">
+      <div class="avatar-wrapper">
+        <div class="avatar-frame-mini">
+          <img id="header-avatar" src="./jay.jpg" alt="Jay">
+        </div>
+        <img id="header-crown" src="./crown.png" class="crown-overlay hidden" alt="Reigning Champion">
       </div>
       <div class="player-switcher">
         <select id="player-select" onchange="switchPlayer(this.value)">
@@ -402,7 +439,7 @@
     </section>
 
     <section id="screen-profile" class="screen hidden">
-      <h2 class="section-header">🏆 Player Profiles & Race</h2>
+      <h2 class="section-header">🏆 Weekly Race & Crowns</h2>
       <div id="leaderboard-view"></div>
     </section>
   </main>
@@ -469,8 +506,8 @@
 
     let activePlayerId = "P1";
     let players = {
-      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg" },
-      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg" }
+      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg", crowns_won: 1, last_week_reset: "" },
+      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg", crowns_won: 0, last_week_reset: "" }
     };
 
     let chores = [
@@ -492,6 +529,38 @@
       { id: "FUR02", name: "Deluxe Multi-Tier Cat Tree", item_type: "Furniture", cost: 120, image_url: "https://img.icons8.com/color/96/cat-track.png", owned: false, owner_id: null, placed_in_cafe: false },
       { id: "W01", name: "Cat Ear Headband", item_type: "Wardrobe", cost: 25, image_url: "https://img.icons8.com/color/96/party-hat.png", owned: false, owner_id: null, placed_in_cafe: false }
     ];
+
+    function getCurrentWeekKey() {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+      const yearStart = new Date(d.getFullYear(), 0, 1);
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getFullYear()}-W${weekNo}`;
+    }
+
+    async function checkWeeklyRollover() {
+      const currentWeek = getCurrentWeekKey();
+      const p1 = players.P1;
+      const p2 = players.P2;
+      if (!p1 || !p2) return;
+
+      if (p1.last_week_reset && p1.last_week_reset !== currentWeek) {
+        if (p1.weekly_points > p2.weekly_points) {
+          p1.crowns_won = (p1.crowns_won || 0) + 1;
+        } else if (p2.weekly_points > p1.weekly_points) {
+          p2.crowns_won = (p2.crowns_won || 0) + 1;
+        }
+
+        p1.weekly_points = 0;
+        p2.weekly_points = 0;
+        p1.last_week_reset = currentWeek;
+        p2.last_week_reset = currentWeek;
+
+        await apiRequest('players?id=eq.P1', 'PATCH', { weekly_points: 0, crowns_won: p1.crowns_won, last_week_reset: currentWeek });
+        await apiRequest('players?id=eq.P2', 'PATCH', { weekly_points: 0, crowns_won: p2.crowns_won, last_week_reset: currentWeek });
+      }
+    }
 
     async function apiRequest(endpoint, method = 'GET', body = null) {
       try {
@@ -528,6 +597,7 @@
         catalog = catData;
       }
 
+      await checkWeeklyRollover();
       updateUI();
     }
 
@@ -543,6 +613,16 @@
       document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
       document.getElementById("header-avatar").src = activePlayer.image_url || (activePlayerId === 'P1' ? './jay.jpg' : './casey.jpg');
       
+      const p1 = players.P1 || { weekly_points: 0 };
+      const p2 = players.P2 || { weekly_points: 0 };
+      const p1IsLeader = (p1.weekly_points || 0) >= (p2.weekly_points || 0);
+      const isCurrentPlayerChamp = (activePlayerId === 'P1' && p1IsLeader) || (activePlayerId === 'P2' && !p1IsLeader);
+      
+      const headerCrown = document.getElementById("header-crown");
+      if (headerCrown) {
+        headerCrown.classList.toggle("hidden", !isCurrentPlayerChamp);
+      }
+
       renderChores();
       renderCafe();
       renderShop();
@@ -738,31 +818,41 @@
     function renderLeaderboard() {
       const container = document.getElementById("leaderboard-view");
       if (!container) return;
-      const p1 = players.P1 || {};
-      const p2 = players.P2 || {};
+      const p1 = players.P1 || { name: "Jay", weekly_points: 0, current_coins: 0, crowns_won: 0 };
+      const p2 = players.P2 || { name: "Casey", weekly_points: 0, current_coins: 0, crowns_won: 0 };
+
+      const p1Leading = (p1.weekly_points || 0) >= (p2.weekly_points || 0);
 
       container.innerHTML = `
-        <div class="card" style="margin-bottom: 14px;">
+        <div class="card ${p1Leading ? 'champion-card' : ''}" style="margin-bottom: 14px;">
           <div class="card-item-left">
-            <div class="leaderboard-avatar-frame">
-              <img src="${p1.image_url || './jay.jpg'}" alt="Jay">
+            <div class="avatar-wrapper">
+              <div class="leaderboard-avatar-frame">
+                <img src="${p1.image_url || './jay.jpg'}" alt="Jay">
+              </div>
+              <img src="./crown.png" class="crown-overlay ${p1Leading ? '' : 'hidden'}" alt="Crown">
             </div>
             <div>
-              <div class="card-title">👑 ${p1.name || 'Jay'} (${p1.role_title || 'Head Barista'})</div>
+              <div class="card-title">${p1Leading ? '👑 ' : '⭐ '}${p1.name || 'Jay'}</div>
               <div class="card-sub">Weekly Score: <strong>${p1.weekly_points || 0} pts</strong></div>
+              <div class="crown-badge">🏆 ${p1.crowns_won || 0} Lifetime Crowns</div>
             </div>
           </div>
           <span style="font-weight:bold; color: var(--gold); font-size: 1.1rem;">💰 ${p1.current_coins || 0}</span>
         </div>
 
-        <div class="card">
+        <div class="card ${!p1Leading ? 'champion-card' : ''}">
           <div class="card-item-left">
-            <div class="leaderboard-avatar-frame">
-              <img src="${p2.image_url || './casey.jpg'}" alt="Casey">
+            <div class="avatar-wrapper">
+              <div class="leaderboard-avatar-frame">
+                <img src="${p2.image_url || './casey.jpg'}" alt="Casey">
+              </div>
+              <img src="./crown.png" class="crown-overlay ${!p1Leading ? '' : 'hidden'}" alt="Crown">
             </div>
             <div>
-              <div class="card-title">⭐ ${p2.name || 'Casey'} (${p2.role_title || 'Cafe Manager'})</div>
+              <div class="card-title">${!p1Leading ? '👑 ' : '⭐ '}${p2.name || 'Casey'}</div>
               <div class="card-sub">Weekly Score: <strong>${p2.weekly_points || 0} pts</strong></div>
+              <div class="crown-badge">🏆 ${p2.crowns_won || 0} Lifetime Crowns</div>
             </div>
           </div>
           <span style="font-weight:bold; color: var(--gold); font-size: 1.1rem;">💰 ${p2.current_coins || 0}</span>
