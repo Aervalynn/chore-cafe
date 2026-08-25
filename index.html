@@ -16,6 +16,7 @@
       --text-dark: #2F3E46;
       --text-muted: #6C757D;
       --border-radius: 16px;
+      --success: #2A9D8F;
     }
 
     * {
@@ -50,7 +51,6 @@
       gap: 10px;
     }
 
-    /* Circular Avatar Framing for Top Bar */
     .avatar-frame-mini {
       width: 46px;
       height: 46px;
@@ -101,10 +101,27 @@
       display: none !important;
     }
 
-    .section-header {
+    .quest-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin: 10px 0 16px;
+    }
+
+    .section-header {
       font-size: 1.3rem;
       color: var(--primary);
+    }
+
+    .btn-add-task {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
     }
 
     .card {
@@ -117,6 +134,12 @@
       justify-content: space-between;
       align-items: center;
       border: 1px solid rgba(0,0,0,0.04);
+      transition: opacity 0.2s ease;
+    }
+
+    .card.completed-today {
+      opacity: 0.65;
+      background-color: #F8F9FA;
     }
 
     .card-item-left {
@@ -125,7 +148,17 @@
       gap: 14px;
     }
 
-    /* Shop Item Framing */
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background-color: #EDE0D4;
+      color: var(--primary);
+      margin-right: 6px;
+    }
+
     .item-img-thumb-frame {
       width: 64px;
       height: 64px;
@@ -173,6 +206,11 @@
       background-color: var(--accent);
     }
 
+    .btn-action.done-state {
+      background-color: var(--success);
+      cursor: default;
+    }
+
     .grid-display {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -203,7 +241,6 @@
       object-fit: contain;
     }
 
-    /* Circular Avatar Framing for Profile/Leaderboard */
     .leaderboard-avatar-frame {
       width: 62px;
       height: 62px;
@@ -257,6 +294,72 @@
       font-size: 1.4rem;
       margin-bottom: 2px;
     }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-dark);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #DDD;
+      font-size: 0.95rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-secondary {
+      background: #E9ECEF;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -280,7 +383,10 @@
   <!-- Main Screens -->
   <main>
     <section id="screen-quests" class="screen">
-      <h2 class="section-header">🧹 Quest Board</h2>
+      <div class="quest-header-row">
+        <h2 class="section-header">🧹 Quest Board</h2>
+        <button class="btn-add-task" onclick="openAddTaskModal()">+ Add Quest</button>
+      </div>
       <div id="chore-list"></div>
     </section>
 
@@ -300,6 +406,42 @@
       <div id="leaderboard-view"></div>
     </section>
   </main>
+
+  <!-- Add Task Modal -->
+  <div id="task-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h3 class="modal-title">✨ Create New Quest</h3>
+      <div class="form-group">
+        <label>Quest Name</label>
+        <input type="text" id="new-task-name" placeholder="e.g. Water plants, Clean oven">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="new-task-category">
+          <option value="Daily Care">Daily Care</option>
+          <option value="Kitchen">Kitchen</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Deep Clean">Deep Clean</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Frequency</label>
+        <select id="new-task-frequency">
+          <option value="daily">Daily Reset</option>
+          <option value="weekly">Weekly Quest</option>
+          <option value="once">One-Time Bounty</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Coin Reward</label>
+        <input type="number" id="new-task-points" value="15" min="5" max="100">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeAddTaskModal()">Cancel</button>
+        <button class="btn-action" onclick="saveNewChore()">Add Quest</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
@@ -332,12 +474,12 @@
     };
 
     let chores = [
-      { id: "C01", name: "Scoop Litter Boxes", category: "Daily Pet Care", points: 15, last_completed_by: null },
-      { id: "C02", name: "Empty / Load Dishwasher", category: "Kitchen", points: 10, last_completed_by: null },
-      { id: "C03", name: "Wipe Kitchen Counters", category: "Kitchen", points: 10, last_completed_by: null },
-      { id: "C04", name: "Take Out Trash & Recycling", category: "Maintenance", points: 15, last_completed_by: null },
-      { id: "C05", name: "Vacuum Living Room", category: "Deep Clean", points: 30, last_completed_by: null },
-      { id: "C06", name: "Mop Hardwood Floors", category: "Deep Clean", points: 35, last_completed_by: null }
+      { id: "C01", name: "Scoop Litter Boxes", category: "Daily Care", points: 15, frequency: "daily", last_completed_by: null, completed_at: null },
+      { id: "C02", name: "Empty / Load Dishwasher", category: "Kitchen", points: 10, frequency: "daily", last_completed_by: null, completed_at: null },
+      { id: "C03", name: "Wipe Kitchen Counters", category: "Kitchen", points: 10, frequency: "daily", last_completed_by: null, completed_at: null },
+      { id: "C04", name: "Take Out Trash & Recycling", category: "Maintenance", points: 15, frequency: "daily", last_completed_by: null, completed_at: null },
+      { id: "C05", name: "Vacuum Living Room", category: "Deep Clean", points: 30, frequency: "weekly", last_completed_by: null, completed_at: null },
+      { id: "C06", name: "Mop Hardwood Floors", category: "Deep Clean", points: 35, frequency: "weekly", last_completed_by: null, completed_at: null }
     ];
 
     let catalog = [
@@ -389,6 +531,13 @@
       updateUI();
     }
 
+    function isDoneToday(dateStr) {
+      if (!dateStr) return false;
+      const completed = new Date(dateStr);
+      const today = new Date();
+      return completed.toDateString() === today.toDateString();
+    }
+
     function updateUI() {
       const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Jay", image_url: "./jay.jpg" };
       document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
@@ -423,10 +572,12 @@
       const player = players[activePlayerId];
       if (!chore || !player) return;
 
+      const now = new Date().toISOString();
       player.current_coins = (player.current_coins || 0) + chore.points;
       player.weekly_points = (player.weekly_points || 0) + chore.points;
       player.lifetime_points = (player.lifetime_points || 0) + chore.points;
       chore.last_completed_by = player.name;
+      chore.completed_at = now;
 
       updateUI();
 
@@ -437,10 +588,48 @@
       });
 
       await apiRequest(`chores?id=eq.${choreId}`, 'PATCH', {
-        last_completed_by: player.name
+        last_completed_by: player.name,
+        completed_at: now
       });
 
       alert(`✨ Great job! +${chore.points} coins awarded to ${player.name}!`);
+    }
+
+    function openAddTaskModal() {
+      document.getElementById("task-modal").classList.remove("hidden");
+    }
+
+    function closeAddTaskModal() {
+      document.getElementById("task-modal").classList.add("hidden");
+    }
+
+    async function saveNewChore() {
+      const name = document.getElementById("new-task-name").value.trim();
+      const category = document.getElementById("new-task-category").value;
+      const frequency = document.getElementById("new-task-frequency").value;
+      const points = parseInt(document.getElementById("new-task-points").value, 10) || 15;
+
+      if (!name) {
+        alert("Please enter a quest name!");
+        return;
+      }
+
+      const newChore = {
+        id: 'C_' + Date.now(),
+        name,
+        category,
+        frequency,
+        points,
+        last_completed_by: null,
+        completed_at: null
+      };
+
+      chores.push(newChore);
+      updateUI();
+      closeAddTaskModal();
+      document.getElementById("new-task-name").value = "";
+
+      await apiRequest('chores', 'POST', newChore);
     }
 
     async function buyItem(itemId) {
@@ -476,15 +665,27 @@
     function renderChores() {
       const container = document.getElementById("chore-list");
       if (!container) return;
-      container.innerHTML = chores.map(chore => `
-        <div class="card">
-          <div>
-            <div class="card-title">${chore.name}</div>
-            <div class="card-sub">${chore.category} • 💰 ${chore.points} Coins ${chore.last_completed_by ? `(Last: ${chore.last_completed_by})` : ''}</div>
+
+      container.innerHTML = chores.map(chore => {
+        const doneToday = isDoneToday(chore.completed_at);
+        return `
+          <div class="card ${doneToday ? 'completed-today' : ''}">
+            <div>
+              <div class="card-title">
+                <span class="tag-badge">${chore.category}</span>
+                ${chore.name}
+              </div>
+              <div class="card-sub">
+                💰 ${chore.points} Coins
+                ${doneToday ? ` • Completed today by <strong>${chore.last_completed_by}</strong>` : (chore.last_completed_by ? ` • Last done by ${chore.last_completed_by}` : '')}
+              </div>
+            </div>
+            ${doneToday 
+              ? `<button class="btn-action done-state">✓ Done</button>` 
+              : `<button class="btn-action" onclick="completeChore('${chore.id}')">Complete</button>`}
           </div>
-          <button class="btn-action" onclick="completeChore('${chore.id}')">Done</button>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function renderCafe() {
