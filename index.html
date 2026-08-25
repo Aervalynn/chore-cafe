@@ -405,7 +405,7 @@
         <div class="avatar-frame-mini">
           <img id="header-avatar" src="./jay.jpg" alt="Jay">
         </div>
-        <img id="header-crown" src="./crown.png" class="crown-overlay hidden" alt="Reigning Champion">
+        <img id="header-crown" src="./crown.jpg" class="crown-overlay hidden" alt="Reigning Champion">
       </div>
       <div class="player-switcher">
         <select id="player-select" onchange="switchPlayer(this.value)">
@@ -830,7 +830,7 @@
               <div class="leaderboard-avatar-frame">
                 <img src="${p1.image_url || './jay.jpg'}" alt="Jay">
               </div>
-              <img src="./crown.png" class="crown-overlay ${p1Leading ? '' : 'hidden'}" alt="Crown">
+              <img src="./crown.jpg" class="crown-overlay ${p1Leading ? '' : 'hidden'}" alt="Crown">
             </div>
             <div>
               <div class="card-title">${p1Leading ? '👑 ' : '⭐ '}${p1.name || 'Jay'}</div>
@@ -847,7 +847,7 @@
               <div class="leaderboard-avatar-frame">
                 <img src="${p2.image_url || './casey.jpg'}" alt="Casey">
               </div>
-              <img src="./crown.png" class="crown-overlay ${!p1Leading ? '' : 'hidden'}" alt="Crown">
+              <img src="./crown.jpg" class="crown-overlay ${!p1Leading ? '' : 'hidden'}" alt="Crown">
             </div>
             <div>
               <div class="card-title">${!p1Leading ? '👑 ' : '⭐ '}${p2.name || 'Casey'}</div>
