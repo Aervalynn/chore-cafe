@@ -66,7 +66,7 @@
       width: 28px;
       height: 28px;
       object-fit: contain;
-      mix-blend-mode: multiply; /* Removes the white JPG background */
+      mix-blend-mode: multiply;
       transform: rotate(15deg);
       z-index: 10;
       pointer-events: none;
@@ -243,6 +243,7 @@
       gap: 14px;
     }
 
+    /* Interactive Cat Cards */
     .grid-item {
       background-color: var(--card-bg);
       border-radius: var(--border-radius);
@@ -250,6 +251,14 @@
       text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       border: 1px solid rgba(0,0,0,0.04);
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .grid-item:active {
+      transform: scale(0.96);
     }
 
     .cat-avatar-frame {
@@ -259,12 +268,55 @@
       align-items: center;
       justify-content: center;
       margin-bottom: 8px;
+      position: relative;
     }
 
     .cat-avatar-frame img {
       max-height: 100%;
       max-width: 100%;
       object-fit: contain;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .grid-item:hover .cat-avatar-frame img {
+      transform: scale(1.05);
+    }
+
+    .affection-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      background-color: #FFF0F3;
+      color: #D90429;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* Floating Heart Effect */
+    .floating-heart {
+      position: absolute;
+      font-size: 1.6rem;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      z-index: 50;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(0.6);
+      }
+      50% {
+        opacity: 0.9;
+        transform: translate(-50%, -30px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -60px) scale(1);
+      }
     }
 
     .leaderboard-avatar-frame {
@@ -432,7 +484,7 @@
 
     <section id="screen-cafe" class="screen hidden">
       <h2 class="section-header">☕ Our Cat Cafe</h2>
-      <p class="card-sub" style="margin-bottom: 12px;">Cats and furnishings adopted by both of you appear here!</p>
+      <p class="card-sub" style="margin-bottom: 12px;">Tap any cat to give them affection and earn daily coins!</p>
       <div id="cafe-grid" class="grid-display"></div>
     </section>
 
@@ -523,11 +575,11 @@
     ];
 
     let catalog = [
-      { id: "CAT01", name: "Bun", item_type: "Cat", cost: 50, image_url: "./bun.jpg", owned: true, owner_id: "P1", placed_in_cafe: true },
-      { id: "CAT02", name: "Clove", item_type: "Cat", cost: 60, image_url: "./clove.jpg", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "CAT03", name: "Cobweb", item_type: "Cat", cost: 60, image_url: "./cobweb.jpg", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "CAT04", name: "Dandi", item_type: "Cat", cost: 70, image_url: "./dandi.jpg", owned: false, owner_id: null, placed_in_cafe: false },
-      { id: "CAT05", name: "Pumpkin", item_type: "Cat", cost: 75, image_url: "./pumpkin.jpg", owned: false, owner_id: null, placed_in_cafe: false },
+      { id: "CAT01", name: "Bun", item_type: "Cat", cost: 50, image_url: "./bun.jpg", owned: true, owner_id: "P1", placed_in_cafe: true, affection_level: 1, last_pet_at: null },
+      { id: "CAT02", name: "Clove", item_type: "Cat", cost: 60, image_url: "./clove.jpg", owned: false, owner_id: null, placed_in_cafe: false, affection_level: 1, last_pet_at: null },
+      { id: "CAT03", name: "Cobweb", item_type: "Cat", cost: 60, image_url: "./cobweb.jpg", owned: false, owner_id: null, placed_in_cafe: false, affection_level: 1, last_pet_at: null },
+      { id: "CAT04", name: "Dandi", item_type: "Cat", cost: 70, image_url: "./dandi.jpg", owned: false, owner_id: null, placed_in_cafe: false, affection_level: 1, last_pet_at: null },
+      { id: "CAT05", name: "Pumpkin", item_type: "Cat", cost: 75, image_url: "./pumpkin.jpg", owned: false, owner_id: null, placed_in_cafe: false, affection_level: 1, last_pet_at: null },
       { id: "FUR01", name: "Sisal Scratching Post", item_type: "Toy", cost: 30, image_url: "https://img.icons8.com/color/96/cat-tree.png", owned: true, owner_id: "P2", placed_in_cafe: true },
       { id: "FUR02", name: "Deluxe Multi-Tier Cat Tree", item_type: "Furniture", cost: 120, image_url: "https://img.icons8.com/color/96/cat-track.png", owned: false, owner_id: null, placed_in_cafe: false },
       { id: "W01", name: "Cat Ear Headband", item_type: "Wardrobe", cost: 25, image_url: "https://img.icons8.com/color/96/party-hat.png", owned: false, owner_id: null, placed_in_cafe: false }
@@ -745,6 +797,45 @@
       alert(`🎉 Welcomed ${item.name}!`);
     }
 
+    async function petCat(catId, event) {
+      const cat = catalog.find(c => c.id === catId);
+      const player = players[activePlayerId];
+      if (!cat || !player) return;
+
+      // Spawn bouncing heart
+      const card = event.currentTarget;
+      const heart = document.createElement("div");
+      heart.className = "floating-heart";
+      heart.textContent = "💖";
+      heart.style.left = "50%";
+      heart.style.top = "40%";
+      card.appendChild(heart);
+      setTimeout(() => heart.remove(), 800);
+
+      // Check daily pet bonus
+      const pettedToday = isDoneToday(cat.last_pet_at);
+      cat.affection_level = (cat.affection_level || 1) + 1;
+      cat.last_pet_at = new Date().toISOString();
+
+      if (!pettedToday) {
+        player.current_coins = (player.current_coins || 0) + 3;
+        alert(`🐾 ${cat.name} purrs happily! +3 Daily Affection Coins!`);
+      }
+
+      updateUI();
+
+      await apiRequest(`catalog?id=eq.${catId}`, 'PATCH', {
+        affection_level: cat.affection_level,
+        last_pet_at: cat.last_pet_at
+      });
+
+      if (!pettedToday) {
+        await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', {
+          current_coins: player.current_coins
+        });
+      }
+    }
+
     function renderChores() {
       const container = document.getElementById("chore-list");
       if (!container) return;
@@ -781,15 +872,19 @@
         return;
       }
 
-      container.innerHTML = placedItems.map(item => `
-        <div class="grid-item">
-          <div class="cat-avatar-frame">
-            <img src="${item.image_url || './bun.jpg'}" alt="">
+      container.innerHTML = placedItems.map(item => {
+        const isCat = item.item_type === 'Cat';
+        return `
+          <div class="grid-item" ${isCat ? `onclick="petCat('${item.id}', event)"` : ''}>
+            <div class="cat-avatar-frame">
+              <img src="${item.image_url || './bun.jpg'}" alt="">
+            </div>
+            <div class="card-title">${item.name}</div>
+            <div class="card-sub">Welcomed by ${players[item.owner_id]?.name || 'Both'}</div>
+            ${isCat ? `<div class="affection-badge">❤️ Level ${item.affection_level || 1}</div>` : ''}
           </div>
-          <div class="card-title">${item.name}</div>
-          <div class="card-sub">Welcomed by ${players[item.owner_id]?.name || 'Both'}</div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function renderShop() {
