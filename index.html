@@ -54,19 +54,22 @@
     /* Crown Overlay & Avatar Container */
     .avatar-wrapper {
       position: relative;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .crown-overlay {
+    .crown-overlay-img {
       position: absolute;
-      top: -8px;
-      right: -6px;
-      width: 26px;
-      height: 26px;
+      top: -10px;
+      right: -8px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
+      mix-blend-mode: multiply; /* Removes the white JPG background */
       transform: rotate(15deg);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
       z-index: 10;
+      pointer-events: none;
     }
 
     .avatar-frame-mini {
@@ -403,9 +406,9 @@
     <div class="user-profile-header">
       <div class="avatar-wrapper">
         <div class="avatar-frame-mini">
-          <img id="header-avatar" src="./jay.jpg" alt="Jay">
+          <img id="header-avatar" src="./jay.jpg" alt="">
         </div>
-        <img id="header-crown" src="./crown.jpg" class="crown-overlay hidden" alt="Reigning Champion">
+        <img id="header-crown" src="./crown.jpg" class="crown-overlay-img hidden" alt="">
       </div>
       <div class="player-switcher">
         <select id="player-select" onchange="switchPlayer(this.value)">
@@ -781,7 +784,7 @@
       container.innerHTML = placedItems.map(item => `
         <div class="grid-item">
           <div class="cat-avatar-frame">
-            <img src="${item.image_url || './bun.jpg'}" alt="${item.name}">
+            <img src="${item.image_url || './bun.jpg'}" alt="">
           </div>
           <div class="card-title">${item.name}</div>
           <div class="card-sub">Welcomed by ${players[item.owner_id]?.name || 'Both'}</div>
@@ -803,7 +806,7 @@
         <div class="card">
           <div class="card-item-left">
             <div class="item-img-thumb-frame">
-              <img src="${item.image_url || './bun.jpg'}" alt="${item.name}">
+              <img src="${item.image_url || './bun.jpg'}" alt="">
             </div>
             <div>
               <div class="card-title">${item.name}</div>
@@ -828,12 +831,12 @@
           <div class="card-item-left">
             <div class="avatar-wrapper">
               <div class="leaderboard-avatar-frame">
-                <img src="${p1.image_url || './jay.jpg'}" alt="Jay">
+                <img src="${p1.image_url || './jay.jpg'}" alt="">
               </div>
-              <img src="./crown.jpg" class="crown-overlay ${p1Leading ? '' : 'hidden'}" alt="Crown">
+              <img src="./crown.jpg" class="crown-overlay-img ${p1Leading ? '' : 'hidden'}" alt="">
             </div>
             <div>
-              <div class="card-title">${p1Leading ? '👑 ' : '⭐ '}${p1.name || 'Jay'}</div>
+              <div class="card-title">${p1.name || 'Jay'}</div>
               <div class="card-sub">Weekly Score: <strong>${p1.weekly_points || 0} pts</strong></div>
               <div class="crown-badge">🏆 ${p1.crowns_won || 0} Lifetime Crowns</div>
             </div>
@@ -845,12 +848,12 @@
           <div class="card-item-left">
             <div class="avatar-wrapper">
               <div class="leaderboard-avatar-frame">
-                <img src="${p2.image_url || './casey.jpg'}" alt="Casey">
+                <img src="${p2.image_url || './casey.jpg'}" alt="">
               </div>
-              <img src="./crown.jpg" class="crown-overlay ${!p1Leading ? '' : 'hidden'}" alt="Crown">
+              <img src="./crown.jpg" class="crown-overlay-img ${!p1Leading ? '' : 'hidden'}" alt="">
             </div>
             <div>
-              <div class="card-title">${!p1Leading ? '👑 ' : '⭐ '}${p2.name || 'Casey'}</div>
+              <div class="card-title">${p2.name || 'Casey'}</div>
               <div class="card-sub">Weekly Score: <strong>${p2.weekly_points || 0} pts</strong></div>
               <div class="crown-badge">🏆 ${p2.crowns_won || 0} Lifetime Crowns</div>
             </div>
