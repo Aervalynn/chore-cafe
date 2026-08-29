@@ -15,9 +15,10 @@
       --gold: #DDA15E;
       --text-dark: #2F3E46;
       --text-muted: #6C757D;
-      --border-radius: 16px;
+      --border-radius: 14px;
       --success: #2A9D8F;
-      --danger: #D90429;
+      --danger: #E63946;
+      --warning: #F4A261;
     }
 
     * {
@@ -38,7 +39,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 18px;
+      padding: 12px 18px;
       background-color: var(--card-bg);
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       position: sticky;
@@ -52,36 +53,13 @@
       gap: 10px;
     }
 
-    .avatar-wrapper {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .crown-overlay-img {
-      position: absolute;
-      top: -10px;
-      right: -8px;
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      mix-blend-mode: multiply;
-      transform: rotate(15deg);
-      z-index: 10;
-      pointer-events: none;
-    }
-
     .avatar-frame-mini {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       border: 2px solid var(--primary);
       overflow: hidden;
       background-color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .avatar-frame-mini img {
@@ -113,7 +91,7 @@
     }
 
     .screen {
-      padding: 18px;
+      padding: 16px;
       max-width: 600px;
       margin: 0 auto;
     }
@@ -122,15 +100,15 @@
       display: none !important;
     }
 
-    .quest-header-row {
+    .section-header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 10px 0 16px;
+      margin: 8px 0 16px;
     }
 
     .section-header {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       color: var(--primary);
     }
 
@@ -138,7 +116,7 @@
       background-color: var(--accent);
       color: white;
       border: none;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 20px;
       font-weight: bold;
       font-size: 0.85rem;
@@ -148,83 +126,60 @@
     .card {
       background-color: var(--card-bg);
       border-radius: var(--border-radius);
-      padding: 12px 16px;
+      padding: 14px 16px;
       margin-bottom: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: opacity 0.2s ease;
+      border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .card.overdue-card {
+    .card.is-overdue {
       border: 1.5px solid var(--danger);
-      background-color: #FFF5F6;
-    }
-
-    .card.champion-card {
-      border: 2px solid var(--gold);
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF5 100%);
-    }
-
-    .card-item-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      background-color: #FFF5F5;
     }
 
     .card-content-left {
       display: flex;
       flex-direction: column;
       gap: 4px;
-    }
-
-    .tag-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      background-color: #EDE0D4;
-      color: var(--primary);
-      margin-right: 6px;
-    }
-
-    .item-img-thumb-frame {
-      width: 64px;
-      height: 64px;
-      border-radius: 14px;
-      background-color: #FAF8F5;
-      border: 1px solid rgba(0,0,0,0.06);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .item-img-thumb-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      transform: scale(2.2);
+      max-width: 68%;
     }
 
     .card-title {
       font-weight: 600;
       font-size: 1rem;
+      line-height: 1.3;
     }
 
-    .card-sub {
+    .card-meta {
       font-size: 0.8rem;
       color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    .overdue-text {
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background-color: #EDE0D4;
+      color: var(--primary);
+      margin-right: 4px;
+    }
+
+    .overdue-tag {
       color: var(--danger);
       font-weight: 700;
+    }
+
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
     }
 
     .btn-action {
@@ -234,133 +189,24 @@
       padding: 8px 16px;
       border-radius: 20px;
       font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
-      margin-left: 5px;
     }
 
     .btn-action:active {
       transform: scale(0.95);
-      background-color: var(--accent);
     }
 
-    .btn-action.done-state {
+    .btn-action.btn-complete {
       background-color: var(--success);
     }
 
-    .btn-decline {
+    .btn-action.btn-decline {
       background-color: #E9ECEF;
       color: var(--text-dark);
     }
 
-    .action-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .grid-display {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .grid-item {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 14px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      border: 1px solid rgba(0,0,0,0.04);
-      position: relative;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .grid-item:active {
-      transform: scale(0.96);
-    }
-
-    .cat-avatar-frame {
-      width: 100%;
-      height: 125px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-      position: relative;
-    }
-
-    .cat-avatar-frame img {
-      max-height: 100%;
-      max-width: 100%;
-      object-fit: contain;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .grid-item:hover .cat-avatar-frame img {
-      transform: scale(1.05);
-    }
-
-    .affection-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      background-color: #FFF0F3;
-      color: #D90429;
-      padding: 3px 8px;
-      border-radius: 12px;
-      margin-top: 6px;
-      font-weight: 600;
-    }
-
-    .floating-heart {
-      position: absolute;
-      font-size: 1.6rem;
-      pointer-events: none;
-      animation: floatUp 0.8s ease-out forwards;
-      z-index: 50;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translate(-50%, 0) scale(0.6); }
-      50% { opacity: 0.9; transform: translate(-50%, -30px) scale(1.2); }
-      100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
-    }
-
-    .leaderboard-avatar-frame {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      border: 2px solid var(--primary);
-      overflow: hidden;
-      background-color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .leaderboard-avatar-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 30%;
-      transform: scale(2.6);
-    }
-
-    .crown-badge {
-      background: #FFF3CD;
-      color: #856404;
-      font-weight: bold;
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 12px;
-      border: 1px solid #FFEBAA;
-      display: inline-block;
-      margin-top: 4px;
-    }
-
+    /* Bottom Nav */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -383,6 +229,7 @@
       font-size: 0.75rem;
       color: var(--text-muted);
       cursor: pointer;
+      gap: 2px;
     }
 
     .nav-item.active {
@@ -391,17 +238,17 @@
     }
 
     .nav-icon {
-      font-size: 1.4rem;
-      margin-bottom: 2px;
+      font-size: 1.3rem;
     }
 
+    /* Modal Form */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -412,18 +259,11 @@
     .modal-box {
       background: #FFFFFF;
       border-radius: 20px;
-      padding: 24px;
+      padding: 22px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      max-width: 420px;
       max-height: 90vh;
       overflow-y: auto;
-    }
-
-    .modal-title {
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 16px;
     }
 
     .form-group {
@@ -438,9 +278,9 @@
       color: var(--text-dark);
     }
 
-    .form-group input[type="text"], .form-group input[type="number"], .form-group input[type="date"], .form-group select {
+    .form-group input, .form-group select {
       width: 100%;
-      padding: 10px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1.5px solid #DDD;
       font-size: 0.95rem;
@@ -464,10 +304,10 @@
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
-    .btn-secondary {
+    .btn-cancel {
       background: #E9ECEF;
       border: none;
       padding: 10px 16px;
@@ -479,13 +319,11 @@
 </head>
 <body>
 
+  <!-- Top Bar -->
   <header class="top-bar">
     <div class="user-profile-header">
-      <div class="avatar-wrapper">
-        <div class="avatar-frame-mini">
-          <img id="header-avatar" src="./jay.jpg" alt="">
-        </div>
-        <img id="header-crown" src="./crown.jpg" class="crown-overlay-img hidden" alt="">
+      <div class="avatar-frame-mini">
+        <img id="header-avatar" src="./jay.jpg" alt="">
       </div>
       <div class="player-switcher">
         <select id="player-select" onchange="switchPlayer(this.value)">
@@ -497,51 +335,38 @@
     <div class="currency-badge" id="player-currency">💰 0 Coins</div>
   </header>
 
+  <!-- Screens -->
   <main>
+    <!-- Screen 1: Quest Board -->
     <section id="screen-quests" class="screen">
-      <div class="quest-header-row">
-        <h2 class="section-header">🧹 Available Quests</h2>
+      <div class="section-header-row">
+        <h2 class="section-header">📋 Available Quests</h2>
         <button class="btn-add-task" onclick="openAddTaskModal()">+ Add Quest</button>
       </div>
-      <p class="card-sub" style="margin-bottom: 12px;">Grab a quest to add it to your personal board.</p>
       <div id="available-chore-list"></div>
     </section>
 
+    <!-- Screen 2: My Tasks -->
     <section id="screen-myboard" class="screen hidden">
-      <h2 class="section-header">📌 My Board</h2>
-      <p class="card-sub" style="margin-bottom: 12px;">Quests you have accepted. Complete them to earn coins!</p>
+      <div class="section-header-row">
+        <h2 class="section-header">📌 My Accepted Tasks</h2>
+      </div>
       <div id="my-chore-list"></div>
-    </section>
-
-    <section id="screen-cafe" class="screen hidden">
-      <h2 class="section-header">☕ Our Cat Cafe</h2>
-      <p class="card-sub" style="margin-bottom: 12px;">Tap any cat to give them affection and earn daily coins!</p>
-      <div id="cafe-grid" class="grid-display"></div>
-    </section>
-
-    <section id="screen-shop" class="screen hidden">
-      <h2 class="section-header">🛍️ Adoption Center & Boutique</h2>
-      <div id="shop-list"></div>
-    </section>
-
-    <section id="screen-profile" class="screen hidden">
-      <h2 class="section-header">🏆 Weekly Race & Crowns</h2>
-      <div id="leaderboard-view"></div>
     </section>
   </main>
 
   <!-- Add Task Modal -->
   <div id="task-modal" class="modal-overlay hidden">
     <div class="modal-box">
-      <h3 class="modal-title">✨ Create New Quest</h3>
+      <h3 style="margin-bottom: 14px; color: var(--primary);">✨ New Quest</h3>
       <div class="form-group">
         <label>Quest Name</label>
-        <input type="text" id="new-task-name" placeholder="e.g. Water plants, Clean oven">
+        <input type="text" id="new-task-name" placeholder="e.g. Clean air filters, Mop kitchen">
       </div>
       <div class="form-group">
         <label>Category</label>
         <select id="new-task-category">
-          <option value="Daily Care">Daily Care</option>
+          <option value="Pet Care">Pet Care</option>
           <option value="Kitchen">Kitchen</option>
           <option value="Maintenance">Maintenance</option>
           <option value="Deep Clean">Deep Clean</option>
@@ -550,7 +375,7 @@
       <div class="form-group">
         <label>Frequency</label>
         <select id="new-task-frequency" onchange="toggleDaysSelector()">
-          <option value="one-time">One Time</option>
+          <option value="one-time">One-Time Bounty</option>
           <option value="special">Special Request</option>
           <option value="daily">Daily / Specific Days</option>
           <option value="weekly">Weekly</option>
@@ -560,19 +385,19 @@
         </select>
       </div>
       <div class="form-group hidden" id="days-selector-group">
-        <label>Select Days</label>
+        <label>Active Days</label>
         <div class="days-grid">
-          <label class="day-check-label"><input type="checkbox" value="1" class="day-check"> Mon</label>
-          <label class="day-check-label"><input type="checkbox" value="2" class="day-check"> Tue</label>
-          <label class="day-check-label"><input type="checkbox" value="3" class="day-check"> Wed</label>
-          <label class="day-check-label"><input type="checkbox" value="4" class="day-check"> Thu</label>
-          <label class="day-check-label"><input type="checkbox" value="5" class="day-check"> Fri</label>
-          <label class="day-check-label"><input type="checkbox" value="6" class="day-check"> Sat</label>
-          <label class="day-check-label"><input type="checkbox" value="0" class="day-check"> Sun</label>
+          <label class="day-check-label"><input type="checkbox" value="1" class="day-check" checked> Mon</label>
+          <label class="day-check-label"><input type="checkbox" value="2" class="day-check" checked> Tue</label>
+          <label class="day-check-label"><input type="checkbox" value="3" class="day-check" checked> Wed</label>
+          <label class="day-check-label"><input type="checkbox" value="4" class="day-check" checked> Thu</label>
+          <label class="day-check-label"><input type="checkbox" value="5" class="day-check" checked> Fri</label>
+          <label class="day-check-label"><input type="checkbox" value="6" class="day-check" checked> Sat</label>
+          <label class="day-check-label"><input type="checkbox" value="0" class="day-check" checked> Sun</label>
         </div>
       </div>
       <div class="form-group">
-        <label>First Due Date</label>
+        <label>Due Date</label>
         <input type="date" id="new-task-due-date">
       </div>
       <div class="form-group">
@@ -580,32 +405,21 @@
         <input type="number" id="new-task-points" value="15" min="5" max="100">
       </div>
       <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeAddTaskModal()">Cancel</button>
+        <button class="btn-cancel" onclick="closeAddTaskModal()">Cancel</button>
         <button class="btn-action" onclick="saveNewChore()">Add Quest</button>
       </div>
     </div>
   </div>
 
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="showScreen('quests')">
       <span class="nav-icon">📋</span>
-      <span>Board</span>
+      <span>Quest Board</span>
     </button>
     <button class="nav-item" onclick="showScreen('myboard')">
       <span class="nav-icon">📌</span>
       <span>My Tasks</span>
-    </button>
-    <button class="nav-item" onclick="showScreen('cafe')">
-      <span class="nav-icon">🐱</span>
-      <span>Cafe</span>
-    </button>
-    <button class="nav-item" onclick="showScreen('shop')">
-      <span class="nav-icon">🎁</span>
-      <span>Shop</span>
-    </button>
-    <button class="nav-item" onclick="showScreen('profile')">
-      <span class="nav-icon">👤</span>
-      <span>Profile</span>
     </button>
   </nav>
 
@@ -615,65 +429,11 @@
 
     let activePlayerId = "P1";
     let players = {
-      P1: { id: "P1", name: "Jay", role_title: "Head Barista", current_coins: 50, weekly_points: 30, image_url: "./jay.jpg", crowns_won: 1, last_week_reset: "" },
-      P2: { id: "P2", name: "Casey", role_title: "Cafe Manager", current_coins: 40, weekly_points: 20, image_url: "./casey.jpg", crowns_won: 0, last_week_reset: "" }
+      P1: { id: "P1", name: "Jay", current_coins: 50, weekly_points: 0, image_url: "./jay.jpg" },
+      P2: { id: "P2", name: "Casey", current_coins: 50, weekly_points: 0, image_url: "./casey.jpg" }
     };
 
-    let chores = [
-      { id: "C01", name: "Scoop Litter Boxes", category: "Daily Care", points: 15, frequency: "daily", status: "available", assigned_to: null, due_date: new Date().toISOString(), created_at: new Date().toISOString(), days_of_week: "0,1,2,3,4,5,6" },
-      { id: "C02", name: "Wipe Kitchen Counters", category: "Kitchen", points: 10, frequency: "daily", status: "accepted", assigned_to: "P1", due_date: new Date().toISOString(), created_at: new Date().toISOString(), days_of_week: "0,1,2,3,4,5,6" },
-      { id: "C05", name: "Vacuum Living Room", category: "Deep Clean", points: 30, frequency: "weekly", status: "available", assigned_to: null, due_date: new Date(Date.now() + 86400000*3).toISOString(), created_at: new Date().toISOString(), days_of_week: "" }
-    ];
-
-    let catalog = [
-      { id: "CAT01", name: "Bun", item_type: "Cat", cost: 50, image_url: "./bun.jpg", owned: true, owner_id: "P1", placed_in_cafe: true, affection_level: 1, last_pet_at: null },
-      { id: "FUR01", name: "Sisal Scratching Post", item_type: "Toy", cost: 30, image_url: "https://img.icons8.com/color/96/cat-tree.png", owned: true, owner_id: "P2", placed_in_cafe: true },
-    ];
-
-    function toggleDaysSelector() {
-      const freq = document.getElementById("new-task-frequency").value;
-      const daysGroup = document.getElementById("days-selector-group");
-      if (freq === 'daily') {
-        daysGroup.classList.remove('hidden');
-      } else {
-        daysGroup.classList.add('hidden');
-      }
-    }
-
-    function formatDate(isoString) {
-      if (!isoString) return "No date";
-      return new Date(isoString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    function isOverdue(isoString) {
-      if (!isoString) return false;
-      const due = new Date(isoString);
-      due.setHours(23, 59, 59, 999);
-      return due < new Date();
-    }
-
-    function calculateNextDue(freq, daysStr, oldDueStr) {
-      const baseDate = oldDueStr ? new Date(oldDueStr) : new Date();
-      let nextDate = new Date(baseDate);
-      if (freq === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-      else if (freq === 'bi-weekly') nextDate.setDate(nextDate.getDate() + 14);
-      else if (freq === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-      else if (freq === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
-      else if (freq === 'daily' && daysStr) {
-        const days = daysStr.split(',').map(Number);
-        let currentDay = nextDate.getDay();
-        let addDays = 1;
-        while(addDays <= 7) {
-          let testDay = (currentDay + addDays) % 7;
-          if (days.includes(testDay)) break;
-          addDays++;
-        }
-        nextDate.setDate(nextDate.getDate() + addDays);
-      } else {
-        return null; // non-recurring
-      }
-      return nextDate.toISOString();
-    }
+    let chores = [];
 
     async function apiRequest(endpoint, method = 'GET', body = null) {
       try {
@@ -689,42 +449,71 @@
         });
         return await res.json();
       } catch (err) {
-        console.error("API error:", err);
+        console.error("Supabase API error:", err);
         return null;
       }
     }
 
     async function syncWithSupabase() {
       const pData = await apiRequest('players?select=*');
-      if (pData && Array.isArray(pData) && pData.length > 0) players = pData.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      if (pData && Array.isArray(pData) && pData.length > 0) {
+        players = pData.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      }
 
-      const cData = await apiRequest('chores?select=*');
-      if (cData && Array.isArray(cData) && cData.length > 0) chores = cData;
-
-      const catData = await apiRequest('catalog?select=*');
-      if (catData && Array.isArray(catData) && catData.length > 0) catalog = catData;
+      const cData = await apiRequest('chores?select=*&order=created_at.desc');
+      if (cData && Array.isArray(cData)) {
+        chores = cData;
+      }
 
       updateUI();
+    }
+
+    function calculateDaysOverdue(dueDateStr) {
+      if (!dueDateStr) return 0;
+      const due = new Date(dueDateStr);
+      due.setHours(23, 59, 59, 999);
+      const now = new Date();
+      if (now <= due) return 0;
+      const diffTime = Math.abs(now - due);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function formatDate(isoString) {
+      if (!isoString) return "No date";
+      return new Date(isoString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function calculateNextDue(freq, daysStr, oldDueStr) {
+      const baseDate = oldDueStr ? new Date(oldDueStr) : new Date();
+      let nextDate = new Date(baseDate);
+
+      if (freq === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+      else if (freq === 'bi-weekly') nextDate.setDate(nextDate.getDate() + 14);
+      else if (freq === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
+      else if (freq === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
+      else if (freq === 'daily' && daysStr) {
+        const days = daysStr.split(',').map(Number);
+        let currentDay = nextDate.getDay();
+        let addDays = 1;
+        while(addDays <= 7) {
+          let testDay = (currentDay + addDays) % 7;
+          if (days.includes(testDay)) break;
+          addDays++;
+        }
+        nextDate.setDate(nextDate.getDate() + addDays);
+      } else {
+        return null;
+      }
+      return nextDate.toISOString();
     }
 
     function updateUI() {
       const activePlayer = players[activePlayerId] || { current_coins: 0, name: "Jay", image_url: "./jay.jpg" };
       document.getElementById("player-currency").textContent = `💰 ${activePlayer.current_coins || 0} Coins`;
       document.getElementById("header-avatar").src = activePlayer.image_url || (activePlayerId === 'P1' ? './jay.jpg' : './casey.jpg');
-      
-      const p1 = players.P1 || { weekly_points: 0 };
-      const p2 = players.P2 || { weekly_points: 0 };
-      const p1IsLeader = (p1.weekly_points || 0) >= (p2.weekly_points || 0);
-      const isCurrentPlayerChamp = (activePlayerId === 'P1' && p1IsLeader) || (activePlayerId === 'P2' && !p1IsLeader);
-      
-      const headerCrown = document.getElementById("header-crown");
-      if (headerCrown) headerCrown.classList.toggle("hidden", !isCurrentPlayerChamp);
 
       renderAvailableChores();
       renderMyBoard();
-      renderCafe();
-      renderShop();
-      renderLeaderboard();
     }
 
     function switchPlayer(playerId) {
@@ -733,7 +522,7 @@
     }
 
     function showScreen(screenName) {
-      const screens = ["quests", "myboard", "cafe", "shop", "profile"];
+      const screens = ["quests", "myboard"];
       screens.forEach(s => {
         const el = document.getElementById(`screen-${s}`);
         if (el) el.classList.toggle("hidden", s !== screenName);
@@ -743,6 +532,12 @@
       buttons.forEach((btn, idx) => {
         btn.classList.toggle("active", screens[idx] === screenName);
       });
+    }
+
+    function toggleDaysSelector() {
+      const freq = document.getElementById("new-task-frequency").value;
+      const daysGroup = document.getElementById("days-selector-group");
+      daysGroup.classList.toggle("hidden", freq !== "daily");
     }
 
     function openAddTaskModal() {
@@ -760,15 +555,14 @@
       const frequency = document.getElementById("new-task-frequency").value;
       const points = parseInt(document.getElementById("new-task-points").value, 10) || 15;
       const dueDate = document.getElementById("new-task-due-date").value;
-      
+
       let daysOfWeek = "";
       if (frequency === 'daily') {
         const checks = document.querySelectorAll(".day-check:checked");
         daysOfWeek = Array.from(checks).map(c => c.value).join(",");
-        if (!daysOfWeek) return alert("Select at least one day for daily tasks!");
       }
 
-      if (!name || !dueDate) return alert("Please enter a name and select a due date!");
+      if (!name || !dueDate) return alert("Please provide a title and due date!");
 
       const newChore = {
         id: 'C_' + Date.now(),
@@ -780,10 +574,11 @@
         assigned_to: null,
         due_date: new Date(dueDate).toISOString(),
         created_at: new Date().toISOString(),
-        days_of_week: daysOfWeek
+        days_of_week: daysOfWeek,
+        days_overdue: 0
       };
 
-      chores.push(newChore);
+      chores.unshift(newChore);
       updateUI();
       closeAddTaskModal();
       document.getElementById("new-task-name").value = "";
@@ -794,7 +589,7 @@
     async function acceptChore(choreId) {
       const chore = chores.find(c => c.id === choreId);
       if (!chore) return;
-      
+
       chore.status = 'accepted';
       chore.assigned_to = activePlayerId;
       updateUI();
@@ -808,7 +603,7 @@
     async function declineChore(choreId) {
       const chore = chores.find(c => c.id === choreId);
       if (!chore) return;
-      
+
       chore.status = 'available';
       chore.assigned_to = null;
       updateUI();
@@ -826,13 +621,14 @@
 
       player.current_coins = (player.current_coins || 0) + chore.points;
       player.weekly_points = (player.weekly_points || 0) + chore.points;
-      
+
       const nextDue = calculateNextDue(chore.frequency, chore.days_of_week, chore.due_date);
-      
+
       if (nextDue) {
         chore.status = 'available';
         chore.assigned_to = null;
         chore.due_date = nextDue;
+        chore.days_overdue = 0;
       } else {
         chore.status = 'completed';
       }
@@ -847,80 +643,79 @@
       await apiRequest(`chores?id=eq.${choreId}`, 'PATCH', {
         status: chore.status,
         assigned_to: chore.assigned_to,
-        due_date: chore.due_date
+        due_date: chore.due_date,
+        days_overdue: 0,
+        last_completed_by: player.name,
+        completed_at: new Date().toISOString()
       });
-
-      alert(`✨ Quest Complete! +${chore.points} coins!`);
-    }
-
-    function createChoreCardHTML(chore, actionButtonsHTML) {
-      const overdue = chore.status !== 'completed' && isOverdue(chore.due_date);
-      return `
-        <div class="card ${overdue ? 'overdue-card' : ''}">
-          <div class="card-content-left">
-            <div class="card-title">
-              <span class="tag-badge">${chore.category}</span>
-              ${chore.name}
-            </div>
-            <div class="card-sub">
-              Created: ${formatDate(chore.created_at)} • 💰 ${chore.points} Coins<br>
-              <span class="${overdue ? 'overdue-text' : ''}">
-                ${overdue ? '⚠️ Overdue' : 'Due'}: ${formatDate(chore.due_date)}
-              </span>
-              ${chore.frequency !== 'one-time' && chore.frequency !== 'special' ? ` • (${chore.frequency})` : ''}
-            </div>
-          </div>
-          <div class="action-group">
-            ${actionButtonsHTML}
-          </div>
-        </div>
-      `;
     }
 
     function renderAvailableChores() {
       const container = document.getElementById("available-chore-list");
       if (!container) return;
       const available = chores.filter(c => c.status === 'available');
-      
+
       if (available.length === 0) {
-        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No available quests right now!</p>`;
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 24px;">No quests on the board! Tap "+ Add Quest" to create one.</p>`;
         return;
       }
-      
-      container.innerHTML = available.map(chore => 
-        createChoreCardHTML(chore, `<button class="btn-action" onclick="acceptChore('${chore.id}')">Accept</button>`)
-      ).join("");
+
+      container.innerHTML = available.map(c => {
+        const daysOver = calculateDaysOverdue(c.due_date);
+        return `
+          <div class="card ${daysOver > 0 ? 'is-overdue' : ''}">
+            <div class="card-content-left">
+              <div class="card-title">
+                <span class="tag-badge">${c.category}</span>
+                ${c.name}
+              </div>
+              <div class="card-meta">
+                💰 ${c.points} Coins • ${c.frequency}<br>
+                ${daysOver > 0 ? `<span class="overdue-tag">⚠️ Overdue by ${daysOver} day${daysOver > 1 ? 's' : ''}</span>` : `Due: ${formatDate(c.due_date)}`}
+              </div>
+            </div>
+            <div class="action-group">
+              <button class="btn-action" onclick="acceptChore('${c.id}')">Accept</button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderMyBoard() {
       const container = document.getElementById("my-chore-list");
       if (!container) return;
       const myChores = chores.filter(c => c.status === 'accepted' && c.assigned_to === activePlayerId);
-      
+
       if (myChores.length === 0) {
-        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">Your board is clear! Go grab a quest.</p>`;
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 24px;">Your board is clear. Check the Quest Board to accept a task!</p>`;
         return;
       }
-      
-      container.innerHTML = myChores.map(chore => 
-        createChoreCardHTML(chore, `
-          <button class="btn-action done-state" onclick="completeChore('${chore.id}')">Complete</button>
-          <button class="btn-action btn-decline" onclick="declineChore('${chore.id}')">Decline</button>
-        `)
-      ).join("");
+
+      container.innerHTML = myChores.map(c => {
+        const daysOver = calculateDaysOverdue(c.due_date);
+        return `
+          <div class="card ${daysOver > 0 ? 'is-overdue' : ''}">
+            <div class="card-content-left">
+              <div class="card-title">
+                <span class="tag-badge">${c.category}</span>
+                ${c.name}
+              </div>
+              <div class="card-meta">
+                💰 ${c.points} Coins • Created: ${formatDate(c.created_at)}<br>
+                ${daysOver > 0 ? `<span class="overdue-tag">⚠️ Overdue by ${daysOver} day${daysOver > 1 ? 's' : ''}</span>` : `Due: ${formatDate(c.due_date)}`}
+              </div>
+            </div>
+            <div class="action-group">
+              <button class="btn-action btn-complete" onclick="completeChore('${c.id}')">Complete</button>
+              <button class="btn-action btn-decline" onclick="declineChore('${c.id}')">Decline</button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
-    // Retained Cafe, Shop, and Profile rendering logic below
-    function renderCafe() { /* Unchanged from previous version for brevity */ }
-    function renderShop() { /* Unchanged */ }
-    function renderLeaderboard() { /* Unchanged */ }
-
-    // Dummy definitions to avoid breaking the UI rendering calls
-    function renderCafe(){document.getElementById("cafe-grid").innerHTML = catalog.filter(i => i.placed_in_cafe && i.owned).map(item => `<div class="grid-item"><div class="cat-avatar-frame"><img src="${item.image_url}" alt=""></div><div class="card-title">${item.name}</div></div>`).join("");}
-    function renderShop(){document.getElementById("shop-list").innerHTML = catalog.filter(i => !i.owned).map(item => `<div class="card"><div class="card-item-left"><div class="item-img-thumb-frame"><img src="${item.image_url}" alt=""></div><div><div class="card-title">${item.name}</div><div class="card-sub">${item.item_type} • 💰 ${item.cost} Coins</div></div></div><button class="btn-action">Buy</button></div>`).join("");}
-    function renderLeaderboard(){/* Placeholder for brevity */}
-
-    updateUI();
+    syncWithSupabase();
   </script>
 </body>
 </html>
