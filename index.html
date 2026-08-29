@@ -95,12 +95,17 @@
       border: 1px solid #FAEDCD;
       font-size: 1.1rem;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+    }
+
+    .btn-notif:active {
+      transform: scale(0.92);
+      background-color: #FAEDCD;
     }
 
     .currency-badge {
@@ -466,33 +471,52 @@
         allowLocalhostAsSecureOrigin: true,
       });
 
-      // Track Push Subscription changes
-      OneSignal.User.PushSubscription.addEventListener("change", async function(event) {
-        if (event.current && event.current.id) {
-          console.log("OneSignal Device ID:", event.current.id);
-          await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: event.current.id });
-        }
-      });
+      // Track push subscription changes automatically
+      if (OneSignal.User && OneSignal.User.PushSubscription) {
+        OneSignal.User.PushSubscription.addEventListener("change", async function(event) {
+          if (event.current && event.current.id) {
+            console.log("Device subscribed. ID:", event.current.id);
+            await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: event.current.id });
+          }
+        });
+      }
     });
 
     async function enableNotificationsPrompt() {
       try {
-        await window.OneSignalDeferred.push(async function(OneSignal) {
-          await OneSignal.Slidedown.promptPush();
-          const subId = OneSignal.User.PushSubscription.id;
-          if (subId) {
-            await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: subId });
-            alert("🔔 Notifications enabled successfully!");
-          }
-        });
+        if (!("Notification" in window)) {
+          alert("This browser does not support push notifications.");
+          return;
+        }
+
+        // Direct browser permission request
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          window.OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.User.PushSubscription.optIn();
+            const subId = OneSignal.User.PushSubscription.id;
+            if (subId) {
+              await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: subId });
+              alert("🔔 Notifications enabled and linked to " + players[activePlayerId].name + "!");
+            } else {
+              alert("🔔 Notifications allowed! Syncing device token...");
+            }
+          });
+        } else if (permission === "denied") {
+          alert("Notifications are currently blocked. Please enable them in Chrome Site Settings (lock icon next to the URL).");
+        }
       } catch (err) {
-        console.error("Prompt error:", err);
+        console.error("Notification prompt error:", err);
+        alert("Notification setup error: " + err.message);
       }
     }
 
     async function sendPushNotification(targetPlayerId, title, message) {
       const targetPlayer = players[targetPlayerId];
-      if (!targetPlayer || !targetPlayer.onesignal_id) return;
+      if (!targetPlayer || !targetPlayer.onesignal_id) {
+        console.log("No device ID found for:", targetPlayerId);
+        return;
+      }
 
       try {
         await fetch("https://onesignal.com/api/v1/notifications", {
