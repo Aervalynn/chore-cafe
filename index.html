@@ -6,6 +6,10 @@
   <title>Chore Cafe</title>
   <meta name="theme-color" content="#D4A373">
   <link rel="manifest" href="manifest.json">
+
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
   <style>
     :root {
       --bg-color: #FAF6F0;
@@ -206,7 +210,6 @@
       color: var(--text-dark);
     }
 
-    /* Bottom Nav */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -241,7 +244,6 @@
       font-size: 1.3rem;
     }
 
-    /* Modal Form */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -337,7 +339,6 @@
 
   <!-- Screens -->
   <main>
-    <!-- Screen 1: Quest Board -->
     <section id="screen-quests" class="screen">
       <div class="section-header-row">
         <h2 class="section-header">📋 Available Quests</h2>
@@ -346,7 +347,6 @@
       <div id="available-chore-list"></div>
     </section>
 
-    <!-- Screen 2: My Tasks -->
     <section id="screen-myboard" class="screen hidden">
       <div class="section-header-row">
         <h2 class="section-header">📌 My Accepted Tasks</h2>
@@ -424,16 +424,56 @@
   </nav>
 
   <script>
+    const ONESIGNAL_APP_ID = "6ef458cb-9395-4510-8d09-e117dc71b223";
     const SUPABASE_URL = "https://pbnxvxdbqtsawqsewddl.supabase.co";
     const SUPABASE_KEY = "sb_publishable_CdAmsR0a0AYj7CV8eAwBxQ_P-5L1W0c";
 
     let activePlayerId = "P1";
     let players = {
-      P1: { id: "P1", name: "Jay", current_coins: 50, weekly_points: 0, image_url: "./jay.jpg" },
-      P2: { id: "P2", name: "Casey", current_coins: 50, weekly_points: 0, image_url: "./casey.jpg" }
+      P1: { id: "P1", name: "Jay", current_coins: 50, weekly_points: 0, image_url: "./jay.jpg", onesignal_id: null },
+      P2: { id: "P2", name: "Casey", current_coins: 50, weekly_points: 0, image_url: "./casey.jpg", onesignal_id: null }
     };
 
     let chores = [];
+
+    // Initialize OneSignal
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        allowLocalhostAsSecureOrigin: true,
+      });
+
+      // Save user OneSignal Player ID to Supabase
+      OneSignal.User.PushSubscription.addEventListener("change", async function(event) {
+        if (event.current.id) {
+          await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: event.current.id });
+        }
+      });
+    });
+
+    async function sendPushNotification(targetPlayerId, title, message) {
+      const targetPlayer = players[targetPlayerId];
+      if (!targetPlayer || !targetPlayer.onesignal_id) return;
+
+      try {
+        await fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${ONESIGNAL_APP_ID}`
+          },
+          body: JSON.stringify({
+            app_id: ONESIGNAL_APP_ID,
+            include_subscription_ids: [targetPlayer.onesignal_id],
+            headings: { "en": title },
+            contents: { "en": message }
+          })
+        });
+      } catch (err) {
+        console.error("OneSignal push error:", err);
+      }
+    }
 
     async function apiRequest(endpoint, method = 'GET', body = null) {
       try {
@@ -460,7 +500,7 @@
         players = pData.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
       }
 
-      const cData = await apiRequest('chores?select=*&order=created_at.desc');
+      const cData = await apiRequest('chores?select=*&order=due_date.asc');
       if (cData && Array.isArray(cData)) {
         chores = cData;
       }
@@ -584,6 +624,9 @@
       document.getElementById("new-task-name").value = "";
 
       await apiRequest('chores', 'POST', newChore);
+
+      const otherPlayerId = activePlayerId === 'P1' ? 'P2' : 'P1';
+      sendPushNotification(otherPlayerId, "📋 New Quest Added", `${players[activePlayerId].name} added: "${name}" (+${points} 💰)`);
     }
 
     async function acceptChore(choreId) {
@@ -598,6 +641,9 @@
         status: 'accepted',
         assigned_to: activePlayerId
       });
+
+      const otherPlayerId = activePlayerId === 'P1' ? 'P2' : 'P1';
+      sendPushNotification(otherPlayerId, "🎯 Quest Claimed", `${players[activePlayerId].name} accepted: "${chore.name}"`);
     }
 
     async function declineChore(choreId) {
@@ -648,12 +694,19 @@
         last_completed_by: player.name,
         completed_at: new Date().toISOString()
       });
+
+      const otherPlayerId = activePlayerId === 'P1' ? 'P2' : 'P1';
+      sendPushNotification(otherPlayerId, "✨ Quest Completed!", `${player.name} finished "${chore.name}" (+${chore.points} 💰)`);
     }
 
     function renderAvailableChores() {
       const container = document.getElementById("available-chore-list");
       if (!container) return;
-      const available = chores.filter(c => c.status === 'available');
+      
+      // Sort overdue tasks first
+      const available = chores.filter(c => c.status === 'available').sort((a, b) => {
+        return calculateDaysOverdue(b.due_date) - calculateDaysOverdue(a.due_date);
+      });
 
       if (available.length === 0) {
         container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 24px;">No quests on the board! Tap "+ Add Quest" to create one.</p>`;
@@ -685,7 +738,11 @@
     function renderMyBoard() {
       const container = document.getElementById("my-chore-list");
       if (!container) return;
-      const myChores = chores.filter(c => c.status === 'accepted' && c.assigned_to === activePlayerId);
+      
+      // Sort overdue tasks first
+      const myChores = chores.filter(c => c.status === 'accepted' && c.assigned_to === activePlayerId).sort((a, b) => {
+        return calculateDaysOverdue(b.due_date) - calculateDaysOverdue(a.due_date);
+      });
 
       if (myChores.length === 0) {
         container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 24px;">Your board is clear. Check the Quest Board to accept a task!</p>`;
