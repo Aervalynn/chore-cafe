@@ -84,6 +84,25 @@
       font-size: 0.95rem;
     }
 
+    .top-right-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-notif {
+      background-color: #FEFAE0;
+      border: 1px solid #FAEDCD;
+      font-size: 1.1rem;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
     .currency-badge {
       background-color: #FEFAE0;
       padding: 6px 14px;
@@ -334,7 +353,10 @@
         </select>
       </div>
     </div>
-    <div class="currency-badge" id="player-currency">💰 0 Coins</div>
+    <div class="top-right-group">
+      <button class="btn-notif" onclick="enableNotificationsPrompt()" title="Enable Notifications">🔔</button>
+      <div class="currency-badge" id="player-currency">💰 0 Coins</div>
+    </div>
   </header>
 
   <!-- Screens -->
@@ -444,13 +466,29 @@
         allowLocalhostAsSecureOrigin: true,
       });
 
-      // Save user OneSignal Player ID to Supabase
+      // Track Push Subscription changes
       OneSignal.User.PushSubscription.addEventListener("change", async function(event) {
-        if (event.current.id) {
+        if (event.current && event.current.id) {
+          console.log("OneSignal Device ID:", event.current.id);
           await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: event.current.id });
         }
       });
     });
+
+    async function enableNotificationsPrompt() {
+      try {
+        await window.OneSignalDeferred.push(async function(OneSignal) {
+          await OneSignal.Slidedown.promptPush();
+          const subId = OneSignal.User.PushSubscription.id;
+          if (subId) {
+            await apiRequest(`players?id=eq.${activePlayerId}`, 'PATCH', { onesignal_id: subId });
+            alert("🔔 Notifications enabled successfully!");
+          }
+        });
+      } catch (err) {
+        console.error("Prompt error:", err);
+      }
+    }
 
     async function sendPushNotification(targetPlayerId, title, message) {
       const targetPlayer = players[targetPlayerId];
@@ -703,7 +741,6 @@
       const container = document.getElementById("available-chore-list");
       if (!container) return;
       
-      // Sort overdue tasks first
       const available = chores.filter(c => c.status === 'available').sort((a, b) => {
         return calculateDaysOverdue(b.due_date) - calculateDaysOverdue(a.due_date);
       });
@@ -739,7 +776,6 @@
       const container = document.getElementById("my-chore-list");
       if (!container) return;
       
-      // Sort overdue tasks first
       const myChores = chores.filter(c => c.status === 'accepted' && c.assigned_to === activePlayerId).sort((a, b) => {
         return calculateDaysOverdue(b.due_date) - calculateDaysOverdue(a.due_date);
       });
